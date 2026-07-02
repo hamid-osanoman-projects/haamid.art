@@ -1,0 +1,23 @@
+name: Supabase Auto-Resume
+on:
+  schedule:
+    - cron: '0 5 */5 * *'   # Every 5 days at 5am UTC
+  workflow_dispatch:        # Manual override
+
+jobs:
+  resume:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install @supabase/supabase-js
+      - name: Resume all paused Supabase projects
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: node scripts/supabase-resume.js
