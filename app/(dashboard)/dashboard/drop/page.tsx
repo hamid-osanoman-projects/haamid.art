@@ -101,7 +101,7 @@ export default function FileDropDashboard() {
   return (
     <div className="p-8 space-y-6 max-w-4xl mx-auto">
       <div className="space-y-2">
-        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
           <ShieldAlert className="h-6 w-6 text-rose-500" />
           Secure File Drop
         </h1>

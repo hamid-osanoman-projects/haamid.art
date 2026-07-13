@@ -234,8 +234,9 @@ export default function MeetingsManager({ initialMeetings, clients }: MeetingsMa
       {viewMode === 'list' ? (
         
         /* LIST VIEW MODULE */
-        <div className="overflow-x-auto rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-white dark:bg-[#141414] shadow-sm">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-hidden rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-white dark:bg-[#141414] shadow-sm">
+          {/* Desktop Table */}
+          <table className="w-full text-left border-collapse hidden md:table">
             <thead>
               <tr className="border-b border-zinc-200 dark:border-zinc-800 text-[10px] uppercase text-zinc-400 tracking-wider font-bold">
                 <th className="px-6 py-4">Meeting Time</th>
@@ -275,6 +276,56 @@ export default function MeetingsManager({ initialMeetings, clients }: MeetingsMa
               ))}
             </tbody>
           </table>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden flex flex-col divide-y divide-zinc-150 dark:divide-zinc-800">
+            {meetings.length > 0 ? (
+              meetings.map((meeting) => (
+                <div 
+                  key={meeting.id}
+                  onClick={() => openMeetingSheet(meeting)}
+                  className="p-4 flex flex-col gap-3 hover:bg-zinc-55/40 dark:hover:bg-[#1a1a1a]/60 cursor-pointer transition-colors"
+                >
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">
+                      {meeting.title}
+                    </div>
+                    <span className={`shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                      meeting.status === 'completed' ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' :
+                      meeting.status === 'cancelled' ? 'border-rose-500/20 bg-rose-500/10 text-rose-400' :
+                      'border-blue-500/20 bg-blue-500/10 text-blue-400'
+                    }`}>
+                      {meeting.status}
+                    </span>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-purple-500/20 bg-purple-500/10 text-[9px] font-bold uppercase tracking-wider text-purple-400">
+                      {meeting.type.replace('_', ' ')}
+                    </span>
+                    <span className="text-[10px] font-bold text-zinc-500">
+                      {meeting.client_name || '—'}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+                    <div className="font-mono text-[10px] text-zinc-500 font-bold">
+                      {new Date(meeting.scheduled_at).toLocaleString(undefined, {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                      })}
+                    </div>
+                    <div className="text-[10px] font-extrabold text-purple-400">
+                      {meeting.duration}m
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-zinc-500 text-xs font-bold">
+                No appointments found.
+              </div>
+            )}
+          </div>
         </div>
 
       ) : (

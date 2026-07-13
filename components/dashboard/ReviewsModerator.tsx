@@ -112,7 +112,7 @@ export default function ReviewsModerator({ initialReviews }: ReviewsModeratorPro
   };
 
   return (
-    <div className="space-y-6 text-zinc-800 dark:text-zinc-100 select-none">
+    <div className="space-y-6 text-zinc-800 dark:text-zinc-100 select-none w-full min-w-0">
       
       {/* -------------------- STATS ROW -------------------- */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -145,7 +145,7 @@ export default function ReviewsModerator({ initialReviews }: ReviewsModeratorPro
       </div>
 
       {/* -------------------- TAB GROUP CONTROLS -------------------- */}
-      <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-900 pb-2">
+      <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-900 pb-2 overflow-x-auto scrollbar-none">
         {(['pending', 'approved', 'rejected'] as const).map(tab => {
           const badgeCount = reviews.filter(r => r.status === tab).length;
           return (
@@ -203,7 +203,7 @@ export default function ReviewsModerator({ initialReviews }: ReviewsModeratorPro
             </div>
 
             {/* Actions Bar */}
-            <div className="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-900/60 pt-4 mt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-900/60 pt-4 mt-6">
               
               {/* Pending Tab Controls: Approve / Reject */}
               {activeTab === 'pending' ? (

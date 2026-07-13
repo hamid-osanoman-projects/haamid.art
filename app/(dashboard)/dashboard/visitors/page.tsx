@@ -22,9 +22,9 @@ export default async function VisitorsDashboard() {
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-6 w-full min-w-0">
       <div className="space-y-2">
-        <h1 className="text-2xl font-black text-white tracking-tight">Visitors CRM</h1>
+        <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Visitors CRM</h1>
         <p className="text-xs text-zinc-500">Track visitor session paths, countries density, and unlocked gamification scores.</p>
       </div>
 

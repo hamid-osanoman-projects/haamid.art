@@ -210,7 +210,7 @@ export default function FreelanceTracker({ initialProjects }: FreelanceTrackerPr
   };
 
   return (
-    <div className="space-y-6 select-none font-sans text-xs font-semibold text-zinc-500">
+    <div className="space-y-6 select-none font-sans text-xs font-semibold text-zinc-500 w-full min-w-0">
       
       {/* -------------------- DYNAMIC GRID OF CARDS -------------------- */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

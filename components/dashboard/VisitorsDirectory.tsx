@@ -291,7 +291,7 @@ export default function VisitorsDirectory({ initialVisitors }: VisitorsDirectory
 
           {/* Directory Listings Table */}
           <div className="rounded-xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#141414] overflow-hidden">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full text-left text-xs border-collapse hidden md:table">
               <thead>
                 <tr className="bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-150 dark:border-zinc-900 text-zinc-400 text-[10px] font-black uppercase tracking-wider">
                   <th className="py-3 px-4">Visitor IP Token</th>
@@ -339,6 +339,52 @@ export default function VisitorsDirectory({ initialVisitors }: VisitorsDirectory
                 ))}
               </tbody>
             </table>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden flex flex-col divide-y divide-zinc-200 dark:divide-zinc-900">
+              {filteredVisitors.map(v => (
+                <div 
+                  key={v.id} 
+                  onClick={() => setSelectedVisitor(v)}
+                  className="p-4 flex flex-col gap-3 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 cursor-pointer transition-colors"
+                >
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="font-mono text-[10px] text-zinc-500 font-bold">
+                      {v.fingerprint.slice(0, 16)}...
+                    </div>
+                    <span className={`shrink-0 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded ${
+                      v.segment === 'lead'
+                        ? 'bg-purple-950/20 text-purple-400 border border-purple-500/10'
+                        : v.segment === 'reader'
+                          ? 'bg-emerald-950/20 text-emerald-400 border border-emerald-500/10'
+                          : 'bg-zinc-950/20 text-zinc-400 border border-zinc-900'
+                    }`}>
+                      {v.segment}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-zinc-800 dark:text-zinc-200 text-xs">
+                      {v.city}, {v.country}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+                    <div className="text-[10px] font-bold text-zinc-500">
+                      <span className="text-zinc-400 font-normal">Last:</span> {new Date(v.last_seen_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    <div className="font-semibold text-zinc-800 dark:text-zinc-150 text-xs">
+                      {v.xp} XP
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredVisitors.length === 0 && (
+                <div className="p-8 text-center text-zinc-500 text-xs font-bold">
+                  No visitors found.
+                </div>
+              )}
+            </div>
           </div>
 
         </div>

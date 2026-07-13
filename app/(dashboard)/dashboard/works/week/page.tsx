@@ -28,7 +28,7 @@ export default async function ThisWeekWorksPage() {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-full w-full min-w-0">
       <AllWorksList 
         tasks={tasks} 
         pageTitle="This Week's Agenda" 

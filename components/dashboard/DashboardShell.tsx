@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { 
   Grid, Briefcase, Users, Calendar, Pencil, Database, 
-  BarChart2, Star, Settings, LogOut, Menu, X, Bell, Plus, ShieldCheck, Radio
+  BarChart2, Star, Settings, LogOut, Menu, X, Bell, Plus, ShieldCheck, Radio, Wallet, Activity
 } from 'lucide-react';
 import QuickAddModal from '@/components/dashboard/works/QuickAddModal';
 
@@ -29,6 +29,8 @@ const NAV_ITEMS = [
   { label: 'Meetings', path: '/dashboard/meetings', icon: Calendar },
   { label: 'Blog', path: '/dashboard/blog', icon: Pencil },
   { label: 'Supabase', path: '/dashboard/supabase', icon: Database },
+  { label: 'Finance Tracker', path: '/dashboard/finance', icon: Wallet },
+  { label: 'Habits Tracker', path: '/dashboard/habits', icon: Activity },
   { label: 'Visitors', path: '/dashboard/visitors', icon: BarChart2 },
   { label: 'Reviews', path: '/dashboard/reviews', icon: Star },
   { label: 'Secure Drop', path: '/dashboard/drop', icon: ShieldCheck },
@@ -152,6 +154,8 @@ export default function DashboardShell({ children, profile }: DashboardShellProp
     if (pathname === '/dashboard/blog') return 'Blog Management';
     if (pathname.startsWith('/dashboard/blog/')) return 'MDX Blog Editor';
     if (pathname === '/dashboard/supabase') return 'Supabase Projects';
+    if (pathname === '/dashboard/finance') return 'Finance Tracking';
+    if (pathname === '/dashboard/habits') return 'Habit Tracker';
     if (pathname === '/dashboard/visitors') return 'Visitor Analytics';
     if (pathname === '/dashboard/reviews') return 'Reviews Moderation';
     if (pathname === '/dashboard/drop') return 'Secure File Drop';
@@ -434,7 +438,7 @@ export default function DashboardShell({ children, profile }: DashboardShellProp
         </header>
 
         {/* Screen Content Scrollable area */}
-        <main className="flex-1 overflow-y-auto p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 w-full min-w-0">
           {children}
         </main>
       </div>

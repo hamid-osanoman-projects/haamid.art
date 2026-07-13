@@ -42,6 +42,7 @@ export default function PersonalTracker({ initialTasks }: PersonalTrackerProps) 
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'overdue' | 'this_week' | 'high_priority' | 'done'>('all');
+  const [mobileTab, setMobileTab] = useState<Task['status']>('backlog');
   
   // New task inline state
   const [newTitleByStatus, setNewTitleByStatus] = useState<Record<string, string>>({});
@@ -346,7 +347,7 @@ export default function PersonalTracker({ initialTasks }: PersonalTrackerProps) 
   });
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-100px)] select-none">
+    <div className="relative flex flex-col h-[calc(100vh-100px)] select-none w-full min-w-0">
       
       {/* -------------------- SEARCH FILTERS BAR -------------------- */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 border-b border-[#e5e5e5] dark:border-[#262626] pb-4 bg-white dark:bg-[#0d0d0d] z-10">
@@ -382,8 +383,25 @@ export default function PersonalTracker({ initialTasks }: PersonalTrackerProps) 
 
       </div>
 
+      {/* -------------------- MOBILE STATUS TABS -------------------- */}
+      <div className="md:hidden flex items-center overflow-x-auto scrollbar-none gap-2 mb-4 px-0.5 z-10 w-full shrink-0 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+        {STATUSES.map(status => (
+          <button
+            key={status}
+            onClick={() => setMobileTab(status)}
+            className={`px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider rounded-lg transition-colors whitespace-nowrap ${
+              mobileTab === status
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+            }`}
+          >
+            {status.replace('_', ' ')}
+          </button>
+        ))}
+      </div>
+
       {/* -------------------- KANBAN BOARD -------------------- */}
-      <div className="flex-1 flex gap-6 overflow-x-auto overflow-y-hidden pb-4 items-start">
+      <div className="flex-1 flex gap-4 md:gap-6 overflow-x-hidden md:overflow-x-auto overflow-y-auto md:overflow-y-hidden pb-4 items-start md:snap-x md:snap-mandatory px-0.5">
         {STATUSES.map(status => {
           const statusTasks = filteredTasks.filter(t => t.status === status);
           
@@ -392,7 +410,9 @@ export default function PersonalTracker({ initialTasks }: PersonalTrackerProps) 
               key={status}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, status)}
-              className="flex flex-col w-[260px] max-h-full shrink-0 border border-[#e5e5e5] dark:border-[#262626] bg-white dark:bg-[#141414] rounded-xl p-4 shadow-sm"
+              className={`flex-col w-full md:w-[260px] max-h-full shrink-0 border border-[#e5e5e5] dark:border-[#262626] bg-white dark:bg-[#141414] rounded-xl p-4 shadow-sm md:snap-center ${
+                mobileTab === status ? 'flex' : 'hidden md:flex'
+              }`}
             >
               {/* Column Header */}
               <div className="flex items-center justify-between mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2">

@@ -210,14 +210,14 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-          <button onClick={() => setIsBlockedDismissed(true)} className="text-red-400 hover:text-red-600 cursor-pointer">
-            <X className="h-4.5 w-4.5" />
+          <button onClick={() => setIsBlockedDismissed(true)} className="text-red-400 hover:text-red-600 cursor-pointer p-3 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2">
+            <X className="h-5 w-5" />
           </button>
         </div>
       )}
 
       {/* Stats Cards Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-900 bg-white dark:bg-[#141414] p-5 flex items-center gap-4">
           <div className="p-3 rounded-lg bg-purple-500/10 text-purple-650 dark:text-purple-400">
             <ClipboardList className="h-5 w-5" />
@@ -260,7 +260,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main split */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6">
         
         {/* Left column (8 cols) */}
         <div className="xl:col-span-8 space-y-6">
@@ -391,7 +391,7 @@ export default function DashboardPage() {
                   value={quickLogTaskId}
                   onChange={e => setQuickLogTaskId(e.target.value)}
                   required
-                  className="w-full mt-1 text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 outline-none cursor-pointer"
+                  className="w-full mt-1 text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 md:py-2.5 min-h-[44px] outline-none cursor-pointer"
                 >
                   <option value="">Choose task...</option>
                   {tasks.filter(t => t.status !== 'done').map(t => (
@@ -410,7 +410,7 @@ export default function DashboardPage() {
                     onChange={e => setQuickLogHours(e.target.value)}
                     required
                     placeholder="0.0"
-                    className="w-full mt-1 text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 outline-none"
+                    className="w-full mt-1 text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 md:py-2.5 min-h-[44px] outline-none"
                   />
                 </div>
                 <div className="col-span-2">
@@ -420,7 +420,7 @@ export default function DashboardPage() {
                     value={quickLogDesc}
                     onChange={e => setQuickLogDesc(e.target.value)}
                     placeholder="Details..."
-                    className="w-full mt-1 text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 outline-none"
+                    className="w-full mt-1 text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 md:py-2.5 min-h-[44px] outline-none"
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function DashboardPage() {
               <button
                 type="submit"
                 disabled={!quickLogTaskId || !quickLogHours || isLogging}
-                className="w-full text-xs font-bold py-2 bg-purple-650 hover:bg-purple-600 text-white rounded-xl cursor-pointer transition-all disabled:opacity-50 flex items-center justify-center gap-1"
+                className="w-full text-xs font-bold py-3 min-h-[44px] bg-purple-650 hover:bg-purple-600 text-white rounded-xl cursor-pointer transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isLogging ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
                 <span>Log Time</span>

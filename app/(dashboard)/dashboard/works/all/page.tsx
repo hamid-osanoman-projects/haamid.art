@@ -21,7 +21,7 @@ export default async function AllWorksPage() {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-full w-full min-w-0">
       <AllWorksList 
         tasks={tasks} 
         pageTitle="All Works Directory" 

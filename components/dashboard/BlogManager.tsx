@@ -54,7 +54,7 @@ export default function BlogManager({ initialPosts }: BlogManagerProps) {
     <div className="space-y-6 select-none font-sans text-xs font-semibold text-zinc-500">
       
       {/* -------------------- HEADER ACTIONS -------------------- */}
-      <div className="flex items-center justify-between border-b border-[#e5e5e5] dark:border-[#262626] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#e5e5e5] dark:border-[#262626] pb-4">
         <div>
           <h2 className="text-zinc-800 dark:text-zinc-200 font-bold">Manage Articles & Build Logs</h2>
           <p className="text-[10px] text-zinc-400 mt-0.5">Write technical papers, log active project updates, and check reads performance.</p>
@@ -62,7 +62,7 @@ export default function BlogManager({ initialPosts }: BlogManagerProps) {
 
         <button
           onClick={handleCreateNewDraft}
-          className="flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-500 py-2 px-4 font-bold text-white transition-colors cursor-pointer"
+          className="flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-500 py-2 px-4 font-bold text-white transition-colors cursor-pointer w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
           <span>New Article</span>
@@ -70,9 +70,10 @@ export default function BlogManager({ initialPosts }: BlogManagerProps) {
       </div>
 
       {/* -------------------- ARTICLES LIST -------------------- */}
-      <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141414] shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#141414] shadow-sm">
         {posts.length > 0 ? (
-          <table className="w-full text-left border-collapse">
+          <>
+            <table className="w-full text-left border-collapse hidden md:table">
             <thead>
               <tr className="border-b border-zinc-200 dark:border-zinc-800 text-[10px] uppercase text-zinc-400 tracking-wider font-bold">
                 <th className="px-6 py-4">Article Title</th>
@@ -131,7 +132,67 @@ export default function BlogManager({ initialPosts }: BlogManagerProps) {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden flex flex-col divide-y divide-zinc-150 dark:divide-zinc-800">
+              {posts.map((post) => (
+                <div 
+                  key={post.id}
+                  onClick={() => router.push(`/dashboard/blog/${post.id}`)}
+                  className="p-4 flex flex-col gap-3 hover:bg-zinc-55/40 dark:hover:bg-[#1a1a1a]/60 cursor-pointer transition-colors"
+                >
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">
+                      {post.title}
+                    </div>
+                    <span className={`shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                      post.status === 'published' 
+                        ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' 
+                        : 'border-zinc-500/20 bg-zinc-500/10 text-zinc-400'
+                    }`}>
+                      {post.status}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-purple-500/20 bg-purple-500/10 text-[9px] font-bold uppercase tracking-wider text-purple-400 capitalize">
+                      {post.category.replace('_', ' ')}
+                    </span>
+                    <span className="text-[10px] font-bold text-zinc-500">
+                      {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Draft'}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+                    <div className="flex gap-4 text-[10px] font-extrabold text-zinc-400">
+                      <span>👁 {post.views_count || 0}</span>
+                      <span>❤️ {post.likes_count || 0}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/dashboard/blog/${post.id}`);
+                        }}
+                        className="p-1 rounded bg-purple-500/10 text-purple-400 hover:bg-purple-600 hover:text-white transition-colors cursor-pointer"
+                        title="Edit Article"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeletePost(post.id, e)}
+                        className="p-1 rounded bg-rose-500/10 text-rose-400 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer"
+                        title="Delete Article"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-20 bg-white dark:bg-[#141414]">
             <Sparkles className="h-8 w-8 text-purple-500/20 mx-auto mb-4 animate-pulse" />

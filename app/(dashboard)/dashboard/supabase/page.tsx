@@ -22,9 +22,9 @@ export default async function SupabaseConsoleDashboard() {
   }
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-6 w-full min-w-0">
       <div className="space-y-2">
-        <h1 className="text-2xl font-black text-white tracking-tight">Supabase Manager</h1>
+        <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Supabase Manager</h1>
         <p className="text-xs text-zinc-500">Monitor free tier database projects idle counts, trigger restores, and copy scheduler scripts.</p>
       </div>
 

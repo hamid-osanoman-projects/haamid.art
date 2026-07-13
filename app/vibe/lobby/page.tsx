@@ -361,7 +361,7 @@ export default function LobbyPage() {
 
   return (
     <DashboardShell profile={profile}>
-      <div className="p-6 max-w-7xl mx-auto space-y-6 select-none">
+      <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 select-none w-full min-w-0">
         
         {/* Active Session Warning Banner */}
         {activeRoom && (
@@ -519,10 +519,10 @@ export default function LobbyPage() {
           <div className="lg:col-span-7 space-y-6">
             
             {/* Call Trigger Box */}
-            <div className="bg-white dark:bg-[#141414] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-5 space-y-5 shadow-sm">
-              <div className="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-900 pb-3">
-                <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Start Call Room</h3>
-                <div className="flex border border-zinc-200 dark:border-zinc-900 rounded-xl overflow-hidden p-0.5">
+            <div className="bg-white dark:bg-[#141414] border border-zinc-200 dark:border-zinc-900 rounded-3xl p-5 space-y-5 shadow-sm min-w-0 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-3 border-b border-zinc-200 dark:border-zinc-900 pb-3 w-full">
+                <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 shrink-0">Start Call Room</h3>
+                <div className="flex border border-zinc-200 dark:border-zinc-900 rounded-xl overflow-x-auto scrollbar-none p-0.5 w-full sm:w-auto shrink-0 max-w-full">
                   <button
                     onClick={() => handleCallTypeChange('call')}
                     className={`px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all cursor-pointer ${

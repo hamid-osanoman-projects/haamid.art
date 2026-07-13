@@ -193,7 +193,7 @@ export default function ClientsDirectory({ initialClients }: ClientsDirectoryPro
   });
 
   return (
-    <div className="space-y-6 select-none font-sans text-xs font-semibold text-zinc-500">
+    <div className="space-y-6 select-none font-sans text-xs font-semibold text-zinc-500 w-full min-w-0">
       
       {/* -------------------- SEARCH & CREATE ACTIONS BAR -------------------- */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#e5e5e5] dark:border-[#262626] pb-4 bg-white dark:bg-[#0d0d0d]">
@@ -238,8 +238,8 @@ export default function ClientsDirectory({ initialClients }: ClientsDirectoryPro
       </div>
 
       {/* -------------------- CLIENTS TABLE -------------------- */}
-      <div className="overflow-x-auto rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-white dark:bg-[#141414] shadow-sm">
-        <table className="w-full text-left border-collapse">
+      <div className="overflow-hidden rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-white dark:bg-[#141414] shadow-sm">
+        <table className="w-full text-left border-collapse hidden md:table">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 text-[10px] uppercase text-zinc-400 tracking-wider font-bold">
               <th className="px-6 py-4">Client Name</th>
@@ -279,6 +279,57 @@ export default function ClientsDirectory({ initialClients }: ClientsDirectoryPro
             ))}
           </tbody>
         </table>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden flex flex-col divide-y divide-zinc-150 dark:divide-zinc-800">
+          {filteredClients.map((client) => (
+            <div 
+              key={client.id}
+              onClick={() => openClientSheet(client)}
+              className="p-4 flex flex-col gap-3 hover:bg-zinc-55/40 dark:hover:bg-[#1a1a1a]/60 cursor-pointer transition-colors"
+            >
+              <div className="flex justify-between items-start gap-4">
+                <div>
+                  <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">
+                    {client.name}
+                  </div>
+                  {client.company && (
+                    <div className="text-[10px] text-zinc-500 mt-0.5">
+                      {client.company}
+                    </div>
+                  )}
+                </div>
+                <span className="shrink-0 inline-block bg-purple-950/10 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 border border-purple-500/10 px-2 py-0.5 rounded font-bold text-[10px]">
+                  {client.activeProjectsCount || 0} Proj
+                </span>
+              </div>
+              
+              <div className="font-mono text-[11px] text-zinc-500 truncate">
+                {client.email || 'No email provided'}
+              </div>
+
+              <div className="flex justify-between items-center mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+                <div className="text-[10px] font-bold text-zinc-500">
+                  <span className="text-zinc-400 font-normal">Last:</span> {client.lastContactDate || 'Never'}
+                </div>
+                <div>
+                  {client.next_action ? (
+                    <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded">
+                      {client.next_action}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-zinc-500 font-normal">No action</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          {filteredClients.length === 0 && (
+            <div className="p-8 text-center text-zinc-500 text-xs font-bold">
+              No clients found.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* -------------------- DETAIL SHEETS -------------------- */}
