@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
+export const runtime = 'edge';
+
 export default async function proxy(request: NextRequest) {
   // Update session and get user info
   const { user, response } = await updateSession(request);
