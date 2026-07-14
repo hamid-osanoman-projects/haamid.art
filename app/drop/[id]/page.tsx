@@ -5,12 +5,13 @@ import { File, Download, ShieldCheck, AlertCircle, Clock } from 'lucide-react';
 import ClientDownloadButton from './ClientDownloadButton';
 
 interface DropPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default async function DropDownloadPage({ params }: DropPageProps) {
+export default async function DropDownloadPage(props: DropPageProps) {
+  const params = await props.params;
   const { id } = params;
   const supabase = await createClient();
 

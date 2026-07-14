@@ -7,12 +7,13 @@ import {
 } from 'lucide-react';
 
 interface ClientPortalProps {
-  params: {
+  params: Promise<{
     token: string;
-  };
+  }>;
 }
 
-export default async function ClientPortalPage({ params }: ClientPortalProps) {
+export default async function ClientPortalPage(props: ClientPortalProps) {
+  const params = await props.params;
   const { token } = params;
   const supabase = await createClient();
 

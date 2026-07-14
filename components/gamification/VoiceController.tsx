@@ -14,7 +14,7 @@ export default function VoiceController() {
 
   useEffect(() => {
     // Check browser support
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       setIsSupported(true);
       const recognition = new SpeechRecognition();

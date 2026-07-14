@@ -18,7 +18,7 @@ interface Contact {
 interface ActiveRoom {
   id: string;
   room_name: string;
-  type: 'call' | 'watch_party';
+  type: 'call' | 'watch_party' | 'p2p_call';
   watch_url: string;
   display_name: string;
 }
@@ -60,11 +60,12 @@ export default function VibePage() {
 
     // Check if in standalone mode (already installed)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    const isDismissed = localStorage.getItem('vibe_install_dismissed') === 'true';
 
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      if (!isStandalone) {
+      if (!isStandalone && !isDismissed) {
         setShowInstallBanner(true);
       }
     };
@@ -72,7 +73,7 @@ export default function VibePage() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
     // If iOS and not standalone, show banner to help guide them
-    if (ios && !isStandalone) {
+    if (ios && !isStandalone && !isDismissed) {
       setShowInstallBanner(true);
     }
 
@@ -96,6 +97,11 @@ export default function VibePage() {
       setDeferredPrompt(null);
       setShowInstallBanner(false);
     }
+  };
+
+  const handleDismissInstall = () => {
+    localStorage.setItem('vibe_install_dismissed', 'true');
+    setShowInstallBanner(false);
   };
 
   // Check if contact already logged in from localStorage
@@ -470,7 +476,13 @@ export default function VibePage() {
 
               {/* PWA Install Guide Banner */}
               {showInstallBanner && (
-                <div className="p-5 rounded-2xl border border-purple-500/20 bg-purple-500/5 text-center space-y-3">
+                <div className="p-5 rounded-2xl border border-purple-500/20 bg-purple-500/5 text-center space-y-3 relative group">
+                  <button 
+                    onClick={handleDismissInstall}
+                    className="absolute top-2 right-2 p-1.5 rounded-full text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
                   <p className="text-xs text-zinc-300 leading-relaxed px-2">
                     Add Vibe to your Home Screen for full call notifications and a native application experience.
                   </p>

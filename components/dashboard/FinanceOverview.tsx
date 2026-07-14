@@ -233,7 +233,7 @@ export default function FinanceOverview({ transactions, budgetLimit, regionTab, 
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number) => formatMoney(value)}
+                    formatter={(value: any) => formatMoney(value)}
                     contentStyle={{ borderRadius: '12px', border: '1px solid #3f3f46', backgroundColor: '#18181b', color: '#fff' }}
                   />
                 </PieChart>
@@ -263,7 +263,7 @@ export default function FinanceOverview({ transactions, budgetLimit, regionTab, 
               <LineChart data={dailySpendData}>
                 <XAxis dataKey="date" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  formatter={(value: number) => formatMoney(value)}
+                  formatter={(value: any) => formatMoney(value)}
                   labelFormatter={(label) => `Day ${label}`}
                   contentStyle={{ borderRadius: '12px', border: '1px solid #3f3f46', backgroundColor: '#18181b', color: '#fff' }}
                 />

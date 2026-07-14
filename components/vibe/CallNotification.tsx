@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 interface IncomingCall {
   roomId: string;
   roomName: string;
-  type: 'call' | 'watch_party';
+  type: 'call' | 'watch_party' | 'p2p_call';
   message: string;
 }
 

@@ -3,6 +3,12 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  manifest: '/api/manifest/admin',
+};
+
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   
