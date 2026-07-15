@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import {
@@ -13,7 +12,7 @@ import {
 import TypewriterText from '@/components/landing/TypewriterText';
 import StatsCounters from '@/components/landing/StatsCounters';
 import ReviewCarousel from '@/components/landing/ReviewCarousel';
-const ContactForm = dynamic(() => import('@/components/landing/ContactForm'), { ssr: false });
+import ContactForm from '@/components/landing/ContactForm';
 import AskHamidWidget from '@/components/landing/AskHamidWidget';
 import Hero3DWrapper from '@/components/landing/Hero3DWrapper';
 import LandingNav from '@/components/landing/LandingNav';

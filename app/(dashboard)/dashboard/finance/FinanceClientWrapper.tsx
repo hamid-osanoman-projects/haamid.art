@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import FinanceOverview from '@/components/dashboard/FinanceOverview';
+import dynamic from 'next/dynamic';
+const FinanceOverview = dynamic(() => import('@/components/dashboard/FinanceOverview'), { ssr: false });
 import FinanceTransactions from '@/components/dashboard/FinanceTransactions';
 import FinanceSubscriptions from '@/components/dashboard/FinanceSubscriptions';
 
