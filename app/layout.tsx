@@ -3,13 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import TrackerProvider from "@/components/gamification/TrackerProvider";
 import AskHamidWidget from "@/components/ai/AskHamidWidget";
-import TerminalOverlay from "@/components/easteregg/TerminalOverlay";
-import AsciiOverlay from "@/components/easteregg/AsciiOverlay";
-import LightsOutOverlay from "@/components/easteregg/LightsOutOverlay";
-import MusicPlayer from "@/components/ui/MusicPlayer";
-import VoiceController from "@/components/gamification/VoiceController";
-import MouseTrail from "@/components/layout/MouseTrail";
-import MaintenanceListener from "@/components/layout/MaintenanceListener";
+import { TerminalOverlay, AsciiOverlay, LightsOutOverlay } from "@/components/easteregg/DynamicWrappers";
+import { MusicPlayer, VoiceController, MouseTrail, MaintenanceListener } from "@/components/layout/DynamicLayoutWrappers";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 
