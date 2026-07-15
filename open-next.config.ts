@@ -11,7 +11,7 @@ const config: OpenNextConfig = {
       queue: "dummy",
     },
   },
-  edgeExternals: ["node:crypto", "three", "@react-three/fiber", "@react-three/drei", "matter-js"],
+  edgeExternals: ["node:crypto", "three", "@react-three/fiber", "@react-three/drei", "matter-js", "hls.js", "stats-gl", "three-stdlib"],
   middleware: {
     external: true,
     override: {
