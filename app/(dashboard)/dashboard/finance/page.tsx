@@ -1,6 +1,7 @@
 import React from 'react';
 import { createClient } from '@/lib/supabase/server';
-import FinanceClientWrapper from './FinanceClientWrapper';
+import dynamic from 'next/dynamic';
+const FinanceClientWrapper = dynamic(() => import('./FinanceClientWrapper'), { ssr: false });
 
 // --- MOCK FALLBACK DATA ---
 const MOCK_TRANSACTIONS = [

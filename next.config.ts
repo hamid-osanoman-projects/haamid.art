@@ -13,7 +13,7 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {},
-  serverExternalPackages: ['three', '@react-three/fiber', '@react-three/drei', 'matter-js', 'hls.js', 'stats-gl', 'three-stdlib', '@livekit/components-react', '@livekit/components-styles', 'livekit-client'],
+  serverExternalPackages: ['three', '@react-three/fiber', '@react-three/drei', 'matter-js', 'hls.js', 'stats-gl', 'three-stdlib', '@livekit/components-react', '@livekit/components-styles', 'livekit-client', 'recharts', 'canvas-confetti', '@fingerprintjs/fingerprintjs', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
 };
 
 export default withPWA(nextConfig);
