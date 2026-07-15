@@ -13,6 +13,7 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {},
+  serverExternalPackages: ['three', '@react-three/fiber', '@react-three/drei', 'matter-js'],
 };
 
 export default withPWA(nextConfig);
