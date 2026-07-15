@@ -11,7 +11,7 @@ const config: OpenNextConfig = {
       queue: "dummy",
     },
   },
-  edgeExternals: ["node:crypto", "three", "@react-three/fiber", "@react-three/drei", "matter-js", "hls.js", "stats-gl", "three-stdlib"],
+  edgeExternals: ["node:crypto", "three", "@react-three/fiber", "@react-three/drei", "matter-js", "hls.js", "stats-gl", "three-stdlib", "@livekit/components-react", "@livekit/components-styles", "livekit-client"],
   middleware: {
     external: true,
     override: {
