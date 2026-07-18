@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { 
   Grid, Briefcase, Users, Calendar, Pencil, Database, 
-  BarChart2, Star, Settings, LogOut, Menu, X, Bell, Plus, ShieldCheck, Radio, Wallet, Activity
+  BarChart2, Star, Settings, LogOut, Menu, X, Bell, Plus, ShieldCheck, Radio, Wallet, Activity, ChevronDown, ChevronRight
 } from 'lucide-react';
 import QuickAddModal from '@/components/dashboard/works/QuickAddModal';
 
@@ -56,6 +56,7 @@ export default function DashboardShell({ children, profile }: DashboardShellProp
   const [isSavingAvailability, setIsSavingAvailability] = useState(false);
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [counts, setCounts] = useState({ company: 0, freelance: 0, personal: 0 });
+  const [isWorksExpanded, setIsWorksExpanded] = useState(pathname.startsWith('/dashboard/works'));
 
   const supabase = createClient();
 
@@ -187,19 +188,32 @@ export default function DashboardShell({ children, profile }: DashboardShellProp
             const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path) && !isWorks);
             return (
               <div key={item.path} className="space-y-1">
-                <Link
-                  href={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg transition-all ${
-                    isActive || (isWorks && pathname.startsWith('/dashboard/works'))
-                      ? 'bg-purple-950/10 text-purple-600 dark:text-purple-400 dark:bg-purple-950/20'
-                      : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-[#1a1a1a] dark:hover:text-zinc-200'
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{item.label}</span>
-                </Link>
+                <div className="flex items-center group relative">
+                  <Link
+                    href={item.path}
+                    className={`flex-1 flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg transition-all ${
+                      isActive || (isWorks && pathname.startsWith('/dashboard/works'))
+                        ? 'bg-purple-950/10 text-purple-600 dark:text-purple-400 dark:bg-purple-950/20'
+                        : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-[#1a1a1a] dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{item.label}</span>
+                  </Link>
+                  {isWorks && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsWorksExpanded(!isWorksExpanded);
+                      }}
+                      className="absolute right-2 p-1 rounded-md text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      {isWorksExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    </button>
+                  )}
+                </div>
 
-                {isWorks && (
+                {isWorks && isWorksExpanded && (
                   <div className="pl-6 border-l border-zinc-200 dark:border-zinc-800 ml-5 space-y-1 mt-1 pb-1">
                     {WORKS_SUB_ITEMS.map((sub) => {
                       const isSubActive = pathname === sub.path;
