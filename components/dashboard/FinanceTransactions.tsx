@@ -269,14 +269,17 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
           </div>
         </div>
       ) : (
-        <div className="p-6 overflow-x-auto">
-          <div className="min-w-[600px]">
-            <div className="grid grid-cols-7 gap-2 mb-2">
+        <div className="p-3 sm:p-6">
+          <div className="w-full">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="text-center text-[10px] font-extrabold text-zinc-400 uppercase tracking-widest">{day}</div>
+                <div key={day} className="text-center text-[8px] sm:text-[10px] font-extrabold text-zinc-400 uppercase tracking-widest">
+                  <span className="sm:hidden">{day.slice(0, 1)}</span>
+                  <span className="hidden sm:inline">{day}</span>
+                </div>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2">
               {calendarDays.map((day, i) => {
                 const { income, expense, count } = getDayTransactions(day);
                 const isToday = day === today.getDate();
@@ -284,19 +287,19 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
                 return (
                   <div 
                     key={i} 
-                    className={`min-h-[80px] p-2 rounded-xl border ${day ? 'bg-zinc-50 dark:bg-[#121212] border-zinc-200 dark:border-zinc-800' : 'bg-transparent border-transparent'} ${isToday ? 'ring-2 ring-indigo-500/50' : ''}`}
+                    className={`min-h-[50px] sm:min-h-[80px] p-1 sm:p-2 rounded-lg sm:rounded-xl border ${day ? 'bg-zinc-50 dark:bg-[#121212] border-zinc-200 dark:border-zinc-800' : 'bg-transparent border-transparent'} ${isToday ? 'ring-2 ring-indigo-500/50' : ''}`}
                   >
                     {day && (
                       <div className="flex flex-col h-full">
-                        <span className={`text-xs font-bold ${isToday ? 'text-indigo-500' : 'text-zinc-500'}`}>{day}</span>
-                        <div className="mt-auto space-y-1 pt-2">
+                        <span className={`text-[10px] sm:text-xs font-bold ${isToday ? 'text-indigo-500' : 'text-zinc-500'}`}>{day}</span>
+                        <div className="mt-auto space-y-0.5 sm:space-y-1 pt-1 sm:pt-2">
                           {income > 0 && (
-                            <div className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-1 py-0.5 rounded truncate">
+                            <div className="text-[7px] sm:text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-0.5 sm:px-1 py-[1px] sm:py-0.5 rounded truncate">
                               +{formatMoney(income, globalCurrency)}
                             </div>
                           )}
                           {expense > 0 && (
-                            <div className="text-[9px] font-bold text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/30 px-1 py-0.5 rounded truncate">
+                            <div className="text-[7px] sm:text-[9px] font-bold text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/30 px-0.5 sm:px-1 py-[1px] sm:py-0.5 rounded truncate">
                               -{formatMoney(expense, globalCurrency)}
                             </div>
                           )}

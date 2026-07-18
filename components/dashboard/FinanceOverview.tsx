@@ -217,31 +217,33 @@ export default function FinanceOverview({ transactions, budgetLimit, regionTab, 
             <PieChartIcon className="h-4 w-4 text-purple-500" /> Spend by Category
           </h3>
           {expensesByCategory.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={expensesByCategory}
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {expensesByCategory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[entry.name] || CATEGORY_COLORS['Other']} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: any) => formatMoney(value)}
-                    contentStyle={{ borderRadius: '12px', border: '1px solid #3f3f46', backgroundColor: '#18181b', color: '#fff' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="flex flex-col">
+              <div className="h-[220px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={expensesByCategory}
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {expensesByCategory.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[entry.name] || CATEGORY_COLORS['Other']} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value: any) => formatMoney(value)}
+                      contentStyle={{ borderRadius: '12px', border: '1px solid #3f3f46', backgroundColor: '#18181b', color: '#fff' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
               
-              <div className="flex flex-wrap justify-center gap-3 mt-4">
+              <div className="flex flex-wrap justify-center gap-4 mt-6">
                 {expensesByCategory.map((cat) => (
-                  <div key={cat.name} className="flex items-center gap-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+                  <div key={cat.name} className="flex items-center gap-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400">
                     <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CATEGORY_COLORS[cat.name] || CATEGORY_COLORS['Other'] }} />
                     {cat.name}
                   </div>
@@ -249,7 +251,7 @@ export default function FinanceOverview({ transactions, budgetLimit, regionTab, 
               </div>
             </div>
           ) : (
-             <div className="h-64 flex items-center justify-center text-zinc-500 text-xs font-bold">No expenses this month.</div>
+             <div className="h-[264px] flex items-center justify-center text-zinc-500 text-xs font-bold">No expenses this month.</div>
           )}
         </div>
 
@@ -258,10 +260,10 @@ export default function FinanceOverview({ transactions, budgetLimit, regionTab, 
           <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 mb-6 flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-purple-500" /> Daily Spend Trend
           </h3>
-          <div className="h-64">
+          <div className="h-[264px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dailySpendData}>
-                <XAxis dataKey="date" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
+              <LineChart data={dailySpendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <XAxis dataKey="date" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} tickMargin={12} minTickGap={15} />
                 <Tooltip 
                   formatter={(value: any) => formatMoney(value)}
                   labelFormatter={(label) => `Day ${label}`}
