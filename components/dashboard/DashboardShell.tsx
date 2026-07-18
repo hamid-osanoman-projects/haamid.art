@@ -311,19 +311,32 @@ export default function DashboardShell({ children, profile }: DashboardShellProp
                 const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path) && !isWorks);
                 return (
                   <div key={item.path} className="space-y-1">
-                    <Link
-                      href={item.path}
-                      className={`flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg transition-all ${
-                        isActive || (isWorks && pathname.startsWith('/dashboard/works'))
-                          ? 'bg-purple-950/10 text-purple-650 dark:text-purple-400 dark:bg-purple-950/20'
-                          : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-[#1a1a1a] dark:hover:text-zinc-200'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                    </Link>
+                    <div className="flex items-center group relative">
+                      <Link
+                        href={item.path}
+                        className={`flex-1 flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg transition-all ${
+                          isActive || (isWorks && pathname.startsWith('/dashboard/works'))
+                            ? 'bg-purple-950/10 text-purple-650 dark:text-purple-400 dark:bg-purple-950/20'
+                            : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-[#1a1a1a] dark:hover:text-zinc-200'
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </Link>
+                      {isWorks && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsWorksExpanded(!isWorksExpanded);
+                          }}
+                          className="absolute right-2 p-1 rounded-md text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                        >
+                          {isWorksExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </button>
+                      )}
+                    </div>
 
-                    {isWorks && (
+                    {isWorks && isWorksExpanded && (
                       <div className="pl-6 border-l border-zinc-200 dark:border-zinc-800 ml-5 space-y-1 mt-1 pb-1">
                         {WORKS_SUB_ITEMS.map((sub) => {
                           const isSubActive = pathname === sub.path;
