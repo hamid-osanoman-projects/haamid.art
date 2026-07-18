@@ -43,66 +43,11 @@ export default function VibePage() {
   const [error, setError] = useState('');
   const [shake, setShake] = useState(false);
   const [pushStatus, setPushStatus] = useState<'default' | 'granted' | 'denied' | 'unsupported'>('default');
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+
 
   const supabase = createClient();
 
-  // Handle PWA installation callbacks
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
 
-    // Detect iOS
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const ios = /iphone|ipad|ipod/.test(userAgent);
-    setIsIOS(ios);
-
-    // Check if in standalone mode (already installed)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
-    const isDismissed = localStorage.getItem('vibe_install_dismissed') === 'true';
-
-    const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      if (!isStandalone && !isDismissed) {
-        setShowInstallBanner(true);
-      }
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-
-    // If iOS and not standalone, show banner to help guide them
-    if (ios && !isStandalone && !isDismissed) {
-      setShowInstallBanner(true);
-    }
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
-    };
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (isIOS) {
-      alert('To install Vibe: Tap the Share icon (square with arrow up) at the bottom of Safari, then choose "Add to Home Screen" 📲');
-      return;
-    }
-
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('PWA installation accepted by user');
-      }
-      setDeferredPrompt(null);
-      setShowInstallBanner(false);
-    }
-  };
-
-  const handleDismissInstall = () => {
-    localStorage.setItem('vibe_install_dismissed', 'true');
-    setShowInstallBanner(false);
-  };
 
   // Check if contact already logged in from localStorage
   useEffect(() => {
@@ -493,28 +438,6 @@ export default function VibePage() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* PWA Install Guide Banner (Moved outside so it shows on login too) */}
-        {showInstallBanner && (
-          <div className="w-full mt-8 p-5 rounded-2xl border border-purple-500/20 bg-purple-500/5 text-center space-y-3 relative group">
-            <button 
-              onClick={handleDismissInstall}
-              className="absolute top-2 right-2 p-1.5 rounded-full text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-            <p className="text-xs text-zinc-300 leading-relaxed px-2">
-              Add NOOK to your Home Screen for full call notifications and a native application experience.
-            </p>
-            <button
-              type="button"
-              onClick={handleInstallClick}
-              className="w-full rounded-xl bg-purple-600 hover:bg-purple-500 py-3 font-semibold text-white transition-all text-xs cursor-pointer active:scale-95 border-none"
-            >
-              Add NOOK to Home Screen
-            </button>
-          </div>
-        )}
       </main>
 
       {/* Footer Info */}
