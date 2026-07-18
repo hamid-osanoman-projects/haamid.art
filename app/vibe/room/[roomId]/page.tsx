@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import dynamic from 'next/dynamic'
-const CallRoom = dynamic(() => import('@/components/vibe/CallRoom'), { ssr: false })
+import CallRoom from '@/components/vibe/CallRoom'
 import { Loader2 } from 'lucide-react'
 
 export default function RoomPage() {

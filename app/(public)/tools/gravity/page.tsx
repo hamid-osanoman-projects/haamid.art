@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { GravityPlayground } from '@/components/easteregg/DynamicWrappers';
+import GravityPlayground from '@/components/easteregg/GravityPlayground';
 
 export const metadata: Metadata = {
   title: 'Zero-G Physics Playground',

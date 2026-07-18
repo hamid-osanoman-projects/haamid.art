@@ -5,6 +5,8 @@ import {
   Plus, X, Loader2, Receipt, CheckCircle2, AlertTriangle,
   Send, DollarSign, Calendar, FileText, Download, FileDown
 } from 'lucide-react'
+import { pdf } from '@react-pdf/renderer'
+import InvoicePDFTemplate from './InvoicePDFTemplate'
 import { createClient } from '@/lib/supabase/client'
 
 interface Invoice {
@@ -137,11 +139,19 @@ export default function InvoicePanel({ workId, projectTitle, hasClient, clientEm
   async function generateAndUploadPDF(invoice: Invoice) {
     setGeneratingPdf(invoice.id)
     try {
-      // PDF Generation disabled on Cloudflare Workers edge due to WASM size limit (5MB+)
-      throw new Error('PDF Generation is disabled on Cloudflare Workers due to strict 3MB/1MB Worker size limits.');
-      const blob = new Blob(); // Dummy blob for TypeScript
-
-
+      // 1. Generate Blob in browser
+      const blob = await pdf(<InvoicePDFTemplate 
+        invoiceData={{
+          invoiceNumber: invoice.invoice_number,
+          date: invoice.created_at,
+          dueDate: invoice.due_date || '',
+          amount: invoice.amount,
+          currency: invoice.currency,
+          notes: invoice.notes
+        }}
+        workData={{ title: projectTitle }}
+        clientData={hasClient ? { name: 'Client', email: clientEmail } : undefined}
+      />).toBlob()
 
       const supabase = createClient()
       const fileName = `inv_${workId}_${invoice.invoice_number}_${Date.now()}.pdf`
@@ -156,7 +166,7 @@ export default function InvoicePanel({ workId, projectTitle, hasClient, clientEm
         })
 
       if (uploadError) {
-        throw new Error(`Storage error: ${uploadError?.message || 'Unknown error'}`)
+        throw new Error(`Storage error: ${uploadError.message}`)
       }
 
       // 3. Get Public URL (assuming the bucket is public, or we just store the path and use signed URLs. We will use publicUrl for simplicity)

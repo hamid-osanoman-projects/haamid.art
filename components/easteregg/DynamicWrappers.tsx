@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import dynamic from 'next/dynamic';
 
 export const TerminalOverlay = dynamic(() => import('./TerminalOverlay'), { ssr: false });
@@ -8,3 +8,4 @@ export const PhysicsSandbox = dynamic(() => import('./PhysicsSandbox'), { ssr: f
 export const JengaPlayground = dynamic(() => import('./JengaPlayground'), { ssr: false });
 export const GravityPlayground = dynamic(() => import('./GravityPlayground'), { ssr: false });
 export const AsciiArtGenerator = dynamic(() => import('./AsciiArtGenerator'), { ssr: false });
+

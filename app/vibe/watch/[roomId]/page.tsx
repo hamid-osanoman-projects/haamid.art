@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import dynamic from 'next/dynamic'
-const WatchParty = dynamic(() => import('@/components/vibe/WatchParty'), { ssr: false })
+import WatchParty from '@/components/vibe/WatchParty'
 import { Loader2 } from 'lucide-react'
 
 export default function WatchPartyPage() {

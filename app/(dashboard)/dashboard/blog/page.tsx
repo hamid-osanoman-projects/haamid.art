@@ -38,9 +38,9 @@ const MOCK_DASHBOARD_POSTS = [
 export default async function DashboardBlogIndexPage() {
   let posts = MOCK_DASHBOARD_POSTS;
 
-  const supabase = await createClient();
-
   try {
+    const supabase = await createClient();
+    
     // Fetch all posts (draft and published)
     const { data, error } = await supabase
       .from('posts')

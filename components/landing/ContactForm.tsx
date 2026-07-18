@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Mail, User, MessageSquare, Briefcase, Sparkles, Loader2, ArrowRight, Calendar, ExternalLink } from 'lucide-react';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', message: '', type: 'collab' });
@@ -16,8 +17,7 @@ export default function ContactForm() {
 
   // Load FingerprintJS on mount for visitor tracking association
   useEffect(() => {
-    import('@fingerprintjs/fingerprintjs')
-      .then(FingerprintJS => FingerprintJS.load())
+    FingerprintJS.load()
       .then(fp => fp.get())
       .then(result => setFingerprint(result.visitorId))
       .catch(err => console.warn('FingerprintJS load skipped or failed:', err));

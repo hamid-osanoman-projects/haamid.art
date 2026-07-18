@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { AsciiArtGenerator } from '@/components/easteregg/DynamicWrappers';
+import AsciiArtGenerator from '@/components/easteregg/AsciiArtGenerator';
 
 export const metadata: Metadata = {
   title: 'ASCII Art Generator',

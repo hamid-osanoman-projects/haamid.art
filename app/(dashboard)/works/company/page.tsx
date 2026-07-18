@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { KanbanSquare, List, Table2, Plus, Calendar, Clock, ArrowUpDown, Loader2 } from 'lucide-react'
-import dynamic from 'next/dynamic'
-const KanbanBoard = dynamic(() => import('@/components/dashboard/works/KanbanBoard'), { ssr: false })
+import KanbanBoard from '@/components/dashboard/works/KanbanBoard'
 import WorkFilters, { FilterState } from '@/components/dashboard/works/WorkFilters'
 import WorkSearch from '@/components/dashboard/works/WorkSearch'
 import AddTaskModal from '@/components/dashboard/works/TaskForm'

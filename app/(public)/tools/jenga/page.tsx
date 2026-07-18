@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { JengaPlayground } from '@/components/easteregg/DynamicWrappers';
+import JengaPlayground from '@/components/easteregg/JengaPlayground';
 
 export const metadata: Metadata = {
   title: 'Tech Stack Jenga',

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { PhysicsSandbox } from '@/components/easteregg/DynamicWrappers';
+import PhysicsSandbox from '@/components/easteregg/PhysicsSandbox';
 
 export const metadata: Metadata = {
   title: 'Physics Sandbox',
