@@ -22,7 +22,7 @@ export default function RoomPage() {
       // ── Step 1: Determine WHO is visiting ──────────────────────────────
       // Check if Hamid (admin) is logged in via Supabase auth
       const { data: { user: authUser } } = await supabase.auth.getUser()
-      const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid@haaamid.art'
+      const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid.codehub@gmail.com'
       const adminIsLoggedIn = !!authUser && authUser.email === ownerEmail
 
       let participantData: any = null

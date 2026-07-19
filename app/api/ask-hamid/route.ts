@@ -44,20 +44,20 @@ export async function POST(request: NextRequest) {
 
     if (recentQueries.length >= 10) {
       return NextResponse.json({
-        reply: 'Daily query limit reached (10 questions max per 24 hours). Reach out to Hamid directly at hamid@haaamid.art!'
+        reply: 'Daily query limit reached (10 questions max per 24 hours). Reach out to Hamid directly at hamid.codehub@gmail.com!'
       }, { status: 429 });
     }
 
     // 2. Fetch live developer profile & availability
     let isAvailable = true;
     let companyWork = 'building performant software systems';
-    let contactEmail = 'hamid@haaamid.art';
+    let contactEmail = 'hamid.codehub@gmail.com';
 
     try {
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
-        .eq('email', 'hamid@haaamid.art')
+        .eq('email', 'hamid.codehub@gmail.com')
         .maybeSingle();
 
       if (profile) {

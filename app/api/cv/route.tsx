@@ -103,7 +103,7 @@ const CVDocument = ({ profile, works, projects }: CVProps) => (
         <Text style={styles.role}>{profile.role || 'Web & Software Developer'}</Text>
         <View style={styles.contactRow}>
           <Text>Muscat, Oman</Text>
-          <Text>hamid@haaamid.art</Text>
+          <Text>hamid.codehub@gmail.com</Text>
           <Text>https://haaamid.art</Text>
         </View>
       </View>
@@ -213,7 +213,7 @@ export async function GET(request: NextRequest) {
 
     // Query details in parallel
     const [profileRes, worksRes, projectsRes] = await Promise.allSettled([
-      supabase.from('profiles').select('*').eq('email', 'hamid@haaamid.art').maybeSingle(),
+      supabase.from('profiles').select('*').eq('email', 'hamid.codehub@gmail.com').maybeSingle(),
       supabase.from('works').select('*').limit(3),
       supabase.from('posts').select('*').limit(3)
     ]);

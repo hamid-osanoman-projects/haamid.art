@@ -199,11 +199,11 @@ export default async function LandingPage() {
               +91 7306658947
             </a>
             <a
-              href="mailto:connect@haamid.art"
+              href="mailto:hamid.codehub@gmail.com"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-sm font-bold text-white transition-all hover:scale-105 active:scale-95"
             >
               <Mail className="h-4 w-4" />
-              connect@haamid.art
+              hamid.codehub@gmail.com
             </a>
           </div> */}
         </div>

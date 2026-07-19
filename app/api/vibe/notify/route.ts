@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 // Set VAPID details for Web Push
-const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:hamid@haaamid.art'
+const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:hamid.codehub@gmail.com'
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || ''
 

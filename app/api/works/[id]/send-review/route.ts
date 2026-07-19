@@ -112,7 +112,7 @@ export async function POST(
       const origin = new URL(request.url).origin
       
       const { error: emailErr } = await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'hamid@haaamid.art',
+        from: process.env.RESEND_FROM_EMAIL || 'hamid.codehub@gmail.com',
         to: client.email,
         subject: `Quick review of our project: ${work.title}`,
         html: `

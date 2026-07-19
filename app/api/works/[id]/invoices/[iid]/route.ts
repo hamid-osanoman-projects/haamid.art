@@ -68,7 +68,7 @@ export async function PUT(
         const resend = new Resend(resendApiKey)
         try {
           await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'hamid@haaamid.art',
+            from: process.env.RESEND_FROM_EMAIL || 'hamid.codehub@gmail.com',
             to: client.email,
             subject: `Payment reminder — Invoice #${data.invoice_number} for ${work.title}`,
             html: `

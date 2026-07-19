@@ -41,8 +41,8 @@ export async function POST(request: Request) {
     }
 
     const resendKey = process.env.RESEND_API_KEY;
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'contact@haaamid.art';
-    const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid@haaamid.art';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'hamid.codehub@gmail.com';
+    const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid.codehub@gmail.com';
 
     let emailSent = false;
 

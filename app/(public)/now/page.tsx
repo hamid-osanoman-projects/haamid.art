@@ -26,7 +26,7 @@ export default async function NowPage() {
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
-      .eq('email', 'hamid@haaamid.art')
+      .eq('email', 'hamid.codehub@gmail.com')
       .maybeSingle();
 
     if (profile && profile.metadata?.now) {

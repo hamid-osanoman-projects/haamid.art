@@ -259,7 +259,7 @@ export default async function ClientPortalPage(props: ClientPortalProps) {
                 <p className="text-xs text-zinc-400 mt-1">If you have any questions about your project, please reach out.</p>
               </div>
               <a 
-                href="mailto:contact@haaamid.art" 
+                href="mailto:hamid.codehub@gmail.com" 
                 className="inline-block bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold uppercase tracking-wider py-2 px-6 rounded-xl transition-all"
               >
                 Email Hamid

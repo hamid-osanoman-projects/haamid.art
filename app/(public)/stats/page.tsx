@@ -38,7 +38,7 @@ export default async function StatsPage() {
       supabase.from('works').select('*'),
       supabase.from('works').select('actual_hours'),
       supabase.from('subscribers').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-      supabase.from('profiles').select('*').eq('email', 'hamid@haaamid.art').maybeSingle()
+      supabase.from('profiles').select('*').eq('email', 'hamid.codehub@gmail.com').maybeSingle()
     ]);
 
     // Parse DB counts

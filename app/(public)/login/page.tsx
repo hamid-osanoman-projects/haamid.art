@@ -167,7 +167,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="hamid@haaamid.art"
+                placeholder="hamid.codehub@gmail.com"
                 disabled={isGoogleLoading || isLoading}
                 className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 py-3.5 pr-4 pl-12 text-sm text-zinc-100 placeholder-zinc-500 outline-none ring-offset-zinc-950 transition-all duration-200 focus:border-purple-500/50 focus:bg-zinc-900/80 focus:ring-2 focus:ring-purple-500/20"
               />

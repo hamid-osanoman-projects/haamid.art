@@ -442,7 +442,7 @@ export default function VibePage() {
 
       {/* Footer Info */}
       <footer className="text-center z-10 text-[10px] text-zinc-600 tracking-wider uppercase py-2">
-        <span>Vibe OS · Sandboxed webRTC calling</span>
+        {/* Footer text removed as requested */}
       </footer>
 
       {/* ==================== INCOMING CALL MODAL OVERLAY ==================== */}

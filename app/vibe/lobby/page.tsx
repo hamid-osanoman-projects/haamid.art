@@ -77,7 +77,7 @@ export default function LobbyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isStartingRoom, setIsStartingRoom] = useState(false)
 
-  const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid@haaamid.art'
+  const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid.codehub@gmail.com'
 
   // Authenticate user & load profile
   useEffect(() => {

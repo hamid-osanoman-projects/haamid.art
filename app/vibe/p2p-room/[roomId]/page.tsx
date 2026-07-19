@@ -24,7 +24,7 @@ export default function P2PRoomPage() {
     async function init() {
       // ── Step 1: Determine WHO is visiting ──────────────────────────────
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid@haaamid.art';
+      const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid.codehub@gmail.com';
       const adminIsLoggedIn = !!authUser && authUser.email === ownerEmail;
 
       let participantData: any = null;

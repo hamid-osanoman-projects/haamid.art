@@ -23,7 +23,7 @@ export default function WatchPartyPage() {
 
       // Check if this is Hamid (host) — he'll have a valid auth session
       const { data: { user } } = await supabase.auth.getUser()
-      const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid@haaamid.art'
+      const ownerEmail = process.env.NEXT_PUBLIC_OWNER_EMAIL || 'hamid.codehub@gmail.com'
 
       let contactData = null
       let hostFlag = false
