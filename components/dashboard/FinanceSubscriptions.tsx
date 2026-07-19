@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Repeat, CheckCircle2, XCircle, Plus, X } from 'lucide-react';
+import { CreditCard, Repeat, CheckCircle2, XCircle, Plus, X, Trash2, Edit2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -27,6 +27,8 @@ interface FinanceSubscriptionsProps {
 export default function FinanceSubscriptions({ subscriptions, transactions, globalCurrency, exchangeRate, regionTab }: FinanceSubscriptionsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingSubId, setEditingSubId] = useState<string | null>(null);
+  const [deleteSubId, setDeleteSubId] = useState<string | null>(null);
   
   // Form State
   const [formName, setFormName] = useState('');
@@ -40,9 +42,24 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
   const router = useRouter();
 
   useEffect(() => {
-    if (regionTab === 'Oman') setFormCurrency('OMR');
-    if (regionTab === 'India') setFormCurrency('INR');
+    if (regionTab === 'Oman') {
+      setFormCurrency('OMR');
+      setFormCategory('Subscription');
+    }
+    if (regionTab === 'India') {
+      setFormCurrency('INR');
+      setFormCategory('Education EMI');
+    }
   }, [regionTab, isModalOpen]);
+
+  // Sync category when currency changes manually inside modal
+  useEffect(() => {
+    if (formCurrency === 'INR') {
+      setFormCategory('Education EMI');
+    } else {
+      setFormCategory('Subscription');
+    }
+  }, [formCurrency]);
 
   const handleAddSubscription = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +71,7 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase.from('finance_subscriptions').insert({
+      const newSub = {
         user_id: user.id,
         name: formName,
         amount: amountNum,
@@ -63,12 +80,22 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
         billing_day: parseInt(formBillingDay),
         category: formCategory,
         active: true
-      });
+      };
+
+      let query;
+      if (editingSubId) {
+        query = supabase.from('finance_subscriptions').update(newSub).eq('id', editingSubId);
+      } else {
+        query = supabase.from('finance_subscriptions').insert(newSub);
+      }
+
+      const { error } = await query;
 
       if (!error) {
         setIsModalOpen(false);
         setFormName('');
         setFormAmount('');
+        setEditingSubId(null);
         router.refresh(); // Force server refetch immediately
       }
     } catch (err) {
@@ -83,6 +110,33 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
     if (globalCurrency === 'INR' && fromCurrency === 'OMR') return amount * exchangeRate;
     if (globalCurrency === 'OMR' && fromCurrency === 'INR') return amount / exchangeRate;
     return amount;
+  };
+
+  const handleDeleteSubscription = (id: string) => {
+    setDeleteSubId(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteSubId) return;
+    try {
+      await supabase.from('finance_subscriptions').delete().eq('id', deleteSubId);
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeleteSubId(null);
+    }
+  };
+
+  const handleEditClick = (sub: Subscription) => {
+    setEditingSubId(sub.id);
+    setFormName(sub.name);
+    setFormAmount(sub.amount.toString());
+    setFormCurrency(sub.currency);
+    setFormBillingCycle(sub.billing_cycle);
+    setFormBillingDay(sub.billing_day ? sub.billing_day.toString() : '1');
+    setFormCategory(sub.category);
+    setIsModalOpen(true);
   };
 
   const handleMarkAsPaid = async (sub: Subscription) => {
@@ -154,7 +208,12 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
           </div>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setEditingSubId(null);
+            setFormName('');
+            setFormAmount('');
+            setIsModalOpen(true);
+          }}
           className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition-colors cursor-pointer"
         >
           <Plus className="h-4 w-4" />
@@ -178,16 +237,30 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
                       <div>
                         <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200">{sub.name}</h4>
                         <p className="text-[10px] font-semibold text-rose-500 uppercase tracking-wider mt-0.5">
-                          {sub.billing_day ? `Due ${sub.billing_day}${['st','nd','rd'][((sub.billing_day%10)-1)]||'th'}` : 'Due Now'}
+                          {(() => {
+                            if (!sub.billing_day) return 'Due Now';
+                            const diff = sub.billing_day - currentDay;
+                            if (diff < 0) return `Overdue by ${Math.abs(diff)} day${Math.abs(diff) > 1 ? 's' : ''}`;
+                            if (diff === 0) return 'Due Today';
+                            return `Due in ${diff} day${diff > 1 ? 's' : ''}`;
+                          })()}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-xs font-black text-rose-600 dark:text-rose-400">
-                        {formatMoney(sub.amount, sub.currency)}
-                      </span>
+                      <div className="flex flex-col items-end">
+                        <span className="text-xs font-black text-rose-600 dark:text-rose-400">
+                          {formatMoney(sub.amount, sub.currency)}
+                        </span>
+                        <div className="flex items-center gap-1 mt-1">
+                          <button onClick={() => handleEditClick(sub)} className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                            <Edit2 className="h-3 w-3" />
+                          </button>
+                          <button onClick={() => handleDeleteSubscription(sub.id)} className="p-1 text-rose-400 hover:text-rose-600 transition-colors">
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
                   <button 
                     onClick={() => handleMarkAsPaid(sub)}
                     className="w-full py-2 bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
@@ -223,10 +296,18 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
                   </p>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="flex flex-col items-end">
                 <span className={`text-xs font-black ${sub.active ? 'text-zinc-800 dark:text-zinc-100' : 'text-zinc-400 line-through'}`}>
                   {formatMoney(sub.amount, sub.currency)}
                 </span>
+                <div className="flex items-center gap-1 mt-1">
+                  <button onClick={() => handleEditClick(sub)} className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                    <Edit2 className="h-3 w-3" />
+                  </button>
+                  <button onClick={() => handleDeleteSubscription(sub.id)} className="p-1 text-rose-400 hover:text-rose-600 transition-colors">
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
               </div>
             </div>
           );
@@ -241,7 +322,7 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
           <div className="bg-white dark:bg-[#121212] border border-zinc-200 dark:border-zinc-900 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl animate-scale-up">
             
             <div className="p-5 border-b border-zinc-200 dark:border-zinc-900 flex justify-between items-center bg-[#fafafa]/80 dark:bg-zinc-950/20">
-              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Add Recurring Bill</h3>
+              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">{editingSubId ? 'Edit Recurring Bill' : 'Add Recurring Bill'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1c1c1c] cursor-pointer">
                 <X className="h-4.5 w-4.5" />
               </button>
@@ -288,21 +369,66 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Category</label>
-                <select value={formCategory} onChange={e => setFormCategory(e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-900 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-indigo-500/50">
-                  <option value="Subscriptions">Subscriptions</option>
-                  <option value="Housing">Housing / EMI</option>
-                  <option value="Education">Education</option>
-                  <option value="Utilities">Utilities</option>
-                  <option value="Entertainment">Entertainment</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+                  <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Category</label>
+                  <select value={formCategory} onChange={e => setFormCategory(e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-900 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-purple-500/50">
+                    {formCurrency === 'INR' ? (
+                      <>
+                        <option value="Education EMI">Education EMI</option>
+                        <option value="SIP">SIP</option>
+                        <option value="Gold invest">Gold invest</option>
+                        <option value="Kuri(Chit Fund)">Kuri (Chit Fund)</option>
+                        <option value="Credit card">Credit card</option>
+                        <option value="Send To Home">Send To Home</option>
+                        <option value="Recharge(mobile)">Recharge (Mobile)</option>
+                        <option value="Remittance">Remittance</option>
+                        <option value="Self spend">Self spend</option>
+                        <option value="Purchase">Purchase</option>
+                        <option value="Cash gift(Remitance in Kind)">Cash gift (Remittance in Kind)</option>
+                        <option value="Subscription">Subscription</option>
+                        <option value="Other">Other</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="MESS food">MESS food</option>
+                        <option value="Wifi recharge">Wifi recharge</option>
+                        <option value="Turf">Turf</option>
+                        <option value="Purchase">Purchase</option>
+                        <option value="Invest(save money)">Invest (Save money)</option>
+                        <option value="Fooding">Fooding</option>
+                        <option value="Outing">Outing</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Subscription">Subscription</option>
+                        <option value="Other">Other</option>
+                      </>
+                    )}
+                  </select>
+                </div>
 
               <button type="submit" disabled={isSubmitting || !formName || !formAmount} className="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50 text-sm cursor-pointer">
                 {isSubmitting ? 'Saving...' : 'Add Bill'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteSubId && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="bg-white dark:bg-[#121212] border border-zinc-200 dark:border-zinc-900 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl animate-scale-up p-6 text-center">
+            <div className="w-12 h-12 bg-rose-100 dark:bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 className="h-6 w-6 text-rose-500" />
+            </div>
+            <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200 mb-2">Delete Bill?</h3>
+            <p className="text-sm text-zinc-500 mb-6">Are you sure you want to permanently stop and delete this recurring bill?</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteSubId(null)} className="flex-1 py-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-sm font-bold rounded-xl transition-colors cursor-pointer">
+                Cancel
+              </button>
+              <button onClick={handleConfirmDelete} className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold rounded-xl transition-colors cursor-pointer">
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { 
-  Plus, Search, ArrowUpRight, ArrowDownRight, MoreVertical, X, Calendar, MapPin, LayoutList
+  Plus, Search, ArrowUpRight, ArrowDownRight, MoreVertical, X, Calendar, LayoutList, Trash2, Edit2
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -44,12 +44,25 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [formNote, setFormNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingTxId, setEditingTxId] = useState<string | null>(null);
+  const [deleteTxId, setDeleteTxId] = useState<string | null>(null);
 
   // Auto-set currency when opening modal in a specific region
   React.useEffect(() => {
     if (regionTab === 'Oman') setFormCurrency('OMR');
     if (regionTab === 'India') setFormCurrency('INR');
   }, [regionTab, isModalOpen]);
+
+  // Auto-reset category when currency or type changes
+  React.useEffect(() => {
+    if (formType === 'income') {
+      setFormCategory('Salary');
+    } else if (formCurrency === 'INR') {
+      setFormCategory('Education EMI');
+    } else {
+      setFormCategory('MESS food');
+    }
+  }, [formType, formCurrency]);
 
   const supabase = createClient();
   const router = useRouter();
@@ -85,33 +98,75 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
         note: formNote
       };
 
-      const { data, error } = await supabase
-        .from('finance_transactions')
-        .insert(newTx)
-        .select()
-        .single();
+      let query;
+      if (editingTxId) {
+        query = supabase.from('finance_transactions').update(newTx).eq('id', editingTxId);
+      } else {
+        query = supabase.from('finance_transactions').insert(newTx);
+      }
+
+      const { data, error } = await query.select().single();
 
       if (!error && data) {
-        setTransactions(prev => [data, ...prev]);
+        if (editingTxId) {
+          setTransactions(prev => prev.map(t => t.id === editingTxId ? data : t));
+        } else {
+          setTransactions(prev => [data, ...prev]);
+        }
         setIsModalOpen(false);
         setFormAmount('');
         setFormNote('');
+        setEditingTxId(null);
         onTransactionAdded(); // Trigger parent refresh if needed
         router.refresh(); // Force server refetch immediately
       } else {
         // Fallback for mock environment
-        const mockTx = { id: Math.random().toString(), ...newTx };
-        setTransactions(prev => [mockTx as any, ...prev]);
+        const mockTx = { id: editingTxId || Math.random().toString(), ...newTx };
+        if (editingTxId) {
+          setTransactions(prev => prev.map(t => t.id === editingTxId ? (mockTx as any) : t));
+        } else {
+          setTransactions(prev => [mockTx as any, ...prev]);
+        }
         setIsModalOpen(false);
         setFormAmount('');
         setFormNote('');
-        onTransactionAdded(); // Trigger parent refresh if needed
-        router.refresh(); // Force server refetch immediately
+        setEditingTxId(null);
+        onTransactionAdded();
+        router.refresh();
       }
     } catch (err) {
       console.error(err);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEditClick = (tx: Transaction) => {
+    setEditingTxId(tx.id);
+    setFormType(tx.type);
+    setFormAmount(tx.amount.toString());
+    setFormCurrency(tx.currency);
+    setFormCategory(tx.category);
+    setFormDate(tx.date.split('T')[0]);
+    setFormNote(tx.note || '');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteTransaction = (id: string) => {
+    setDeleteTxId(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTxId) return;
+    try {
+      await supabase.from('finance_transactions').delete().eq('id', deleteTxId);
+      setTransactions(prev => prev.filter(t => t.id !== deleteTxId));
+      onTransactionAdded();
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeleteTxId(null);
     }
   };
 
@@ -176,7 +231,12 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
             </button>
           </div>
           <button 
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              setEditingTxId(null);
+              setFormAmount('');
+              setFormNote('');
+              setIsModalOpen(true);
+            }}
             className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer"
           >
             <Plus className="h-4 w-4" />
@@ -196,6 +256,7 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
                 <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400">Category</th>
                 <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400">Note</th>
                 <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 text-right">Amount</th>
+                <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
@@ -225,6 +286,16 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
                           ≈ {formatMoney(convert(tx.amount, tx.currency), globalCurrency)}
                         </span>
                       )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button onClick={() => handleEditClick(tx)} className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                        <Edit2 className="h-3.5 w-3.5" />
+                      </button>
+                      <button onClick={() => handleDeleteTransaction(tx.id)} className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -320,7 +391,7 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
           <div className="bg-white dark:bg-[#121212] border border-zinc-200 dark:border-zinc-900 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl animate-scale-up">
             
             <div className="p-5 border-b border-zinc-200 dark:border-zinc-900 flex justify-between items-center bg-[#fafafa]/80 dark:bg-zinc-950/20">
-              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Log Transaction</h3>
+              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">{editingTxId ? 'Edit Transaction' : 'Log Transaction'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1c1c1c] cursor-pointer">
                 <X className="h-4.5 w-4.5" />
               </button>
@@ -364,15 +435,36 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
                   <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Category</label>
                   <select value={formCategory} onChange={e => setFormCategory(e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-900 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-purple-500/50">
                     {formType === 'expense' ? (
-                      <>
-                        <option value="Food">Food & Dining</option>
-                        <option value="Transport">Transport</option>
-                        <option value="Shopping">Shopping</option>
-                        <option value="Utilities">Utilities</option>
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Subscriptions">Subscriptions</option>
-                        <option value="Other">Other</option>
-                      </>
+                      formCurrency === 'INR' ? (
+                        <>
+                          <option value="Education EMI">Education EMI</option>
+                          <option value="SIP">SIP</option>
+                          <option value="Gold invest">Gold invest</option>
+                          <option value="Kuri(Chit Fund)">Kuri (Chit Fund)</option>
+                          <option value="Credit card">Credit card</option>
+                          <option value="Send To Home">Send To Home</option>
+                          <option value="Recharge(mobile)">Recharge (Mobile)</option>
+                          <option value="Remittance">Remittance</option>
+                          <option value="Self spend">Self spend</option>
+                          <option value="Purchase">Purchase</option>
+                          <option value="Cash gift(Remitance in Kind)">Cash gift (Remittance in Kind)</option>
+                          <option value="Subscription">Subscription</option>
+                          <option value="Other">Other</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="MESS food">MESS food</option>
+                          <option value="Wifi recharge">Wifi recharge</option>
+                          <option value="Turf">Turf</option>
+                          <option value="Purchase">Purchase</option>
+                          <option value="Invest(save money)">Invest (Save money)</option>
+                          <option value="Fooding">Fooding</option>
+                          <option value="Outing">Outing</option>
+                          <option value="Groceries">Groceries</option>
+                          <option value="Subscription">Subscription</option>
+                          <option value="Other">Other</option>
+                        </>
+                      )
                     ) : (
                       <>
                         <option value="Salary">Salary</option>
@@ -399,6 +491,27 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
                 {isSubmitting ? 'Saving...' : 'Save Transaction'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTxId && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="bg-white dark:bg-[#121212] border border-zinc-200 dark:border-zinc-900 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl animate-scale-up p-6 text-center">
+            <div className="w-12 h-12 bg-rose-100 dark:bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 className="h-6 w-6 text-rose-500" />
+            </div>
+            <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200 mb-2">Delete Transaction?</h3>
+            <p className="text-sm text-zinc-500 mb-6">Are you sure you want to permanently delete this transaction? This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteTxId(null)} className="flex-1 py-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-sm font-bold rounded-xl transition-colors cursor-pointer">
+                Cancel
+              </button>
+              <button onClick={handleConfirmDelete} className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold rounded-xl transition-colors cursor-pointer">
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

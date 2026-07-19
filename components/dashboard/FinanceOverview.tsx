@@ -19,13 +19,39 @@ interface FinanceOverviewProps {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Food: '#10b981', // emerald
-  Transport: '#3b82f6', // blue
-  Utilities: '#f59e0b', // amber
-  Shopping: '#8b5cf6', // violet
-  Entertainment: '#ec4899', // pink
-  Subscriptions: '#6366f1', // indigo
-  Other: '#9ca3af', // gray
+  // Common
+  'Purchase': '#8b5cf6', // violet
+  'Subscription': '#6366f1', // indigo
+  'Subscriptions': '#6366f1', // indigo (legacy)
+  'Other': '#9ca3af', // gray
+  
+  // Indian Categories
+  'Education EMI': '#ec4899', // pink
+  'SIP': '#14b8a6', // teal
+  'Gold invest': '#eab308', // yellow
+  'Kuri(Chit Fund)': '#f97316', // orange
+  'Credit card': '#ef4444', // red
+  'Send To Home': '#06b6d4', // cyan
+  'Recharge(mobile)': '#84cc16', // lime
+  'Remittance': '#3b82f6', // blue
+  'Self spend': '#d946ef', // fuchsia
+  'Cash gift(Remitance in Kind)': '#f43f5e', // rose
+  
+  // Oman Categories
+  'MESS food': '#10b981', // emerald
+  'Wifi recharge': '#0ea5e9', // sky
+  'Turf': '#22c55e', // green
+  'Invest(save money)': '#059669', // emerald darker
+  'Fooding': '#facc15', // yellow
+  'Outing': '#a855f7', // purple
+  'Groceries': '#fbbf24', // amber-400
+  
+  // Legacy backups
+  'Food': '#10b981',
+  'Transport': '#3b82f6',
+  'Utilities': '#f59e0b',
+  'Shopping': '#8b5cf6',
+  'Entertainment': '#ec4899',
 };
 
 export default function FinanceOverview({ transactions, budgetLimit, regionTab, globalCurrency, exchangeRate }: FinanceOverviewProps) {
