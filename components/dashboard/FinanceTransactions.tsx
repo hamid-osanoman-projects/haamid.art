@@ -323,15 +323,25 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
                   </div>
                   <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{tx.note || '-'}</span>
                 </div>
-                <div className="flex flex-col items-end shrink-0">
-                  <span className={`text-sm font-black flex items-center gap-1 ${tx.type === 'income' ? 'text-emerald-500' : 'text-zinc-800 dark:text-zinc-100'}`}>
-                    {tx.type === 'income' ? '+' : '-'} {formatMoney(tx.amount, tx.currency)}
-                  </span>
-                  {tx.currency !== globalCurrency && (
-                    <span className="text-[9px] font-bold text-zinc-400 mt-0.5">
-                      ≈ {formatMoney(convert(tx.amount, tx.currency), globalCurrency)}
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex flex-col items-end">
+                    <span className={`text-sm font-black flex items-center gap-1 ${tx.type === 'income' ? 'text-emerald-500' : 'text-zinc-800 dark:text-zinc-100'}`}>
+                      {tx.type === 'income' ? '+' : '-'} {formatMoney(tx.amount, tx.currency)}
                     </span>
-                  )}
+                    {tx.currency !== globalCurrency && (
+                      <span className="text-[9px] font-bold text-zinc-400 mt-0.5">
+                        ≈ {formatMoney(convert(tx.amount, tx.currency), globalCurrency)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-center gap-1 border-l border-zinc-200 dark:border-zinc-800/50 pl-3 ml-1">
+                    <button onClick={() => handleEditClick(tx)} className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </button>
+                    <button onClick={() => handleDeleteTransaction(tx.id)} className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             )) : (
