@@ -29,6 +29,20 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingSubId, setEditingSubId] = useState<string | null>(null);
   const [deleteSubId, setDeleteSubId] = useState<string | null>(null);
+  const [activeOptionsSubId, setActiveOptionsSubId] = useState<string | null>(null);
+  const longPressTimer = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleTouchStart = (id: string) => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    longPressTimer.current = setTimeout(() => {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+      setActiveOptionsSubId(id);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+  };
   
   // Form State
   const [formName, setFormName] = useState('');
@@ -228,7 +242,17 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
             <h4 className="text-xs font-bold text-rose-500 uppercase tracking-wider mb-3">Due Soon / Overdue</h4>
             <div className="space-y-3">
               {dueSoonSubs.map(sub => (
-                <div key={sub.id} className="flex flex-col p-3 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 relative overflow-hidden">
+                <div 
+                  key={sub.id} 
+                  className="flex flex-col p-3 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 relative overflow-hidden select-none transition-colors"
+                  onTouchStart={() => handleTouchStart(sub.id)}
+                  onTouchEnd={handleTouchEnd}
+                  onTouchMove={handleTouchEnd}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setActiveOptionsSubId(sub.id);
+                  }}
+                >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-sm">
@@ -251,14 +275,6 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
                         <span className="text-xs font-black text-rose-600 dark:text-rose-400">
                           {formatMoney(sub.amount, sub.currency)}
                         </span>
-                        <div className="flex items-center gap-1 mt-1">
-                          <button onClick={() => handleEditClick(sub)} className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-                            <Edit2 className="h-3 w-3" />
-                          </button>
-                          <button onClick={() => handleDeleteSubscription(sub.id)} className="p-1 text-rose-400 hover:text-rose-600 transition-colors">
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
                       </div>
                     </div>
                   <button 
@@ -276,7 +292,17 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
         {otherSubs.length > 0 || dueSoonSubs.length > 0 ? otherSubs.map(sub => {
           const isPaidThisMonth = paidSubscriptionIds.has(sub.id);
           return (
-            <div key={sub.id} className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-[#0d0d0d]">
+            <div 
+              key={sub.id} 
+              className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-[#0d0d0d] select-none transition-colors hover:bg-zinc-100 dark:hover:bg-[#1a1a1a]"
+              onTouchStart={() => handleTouchStart(sub.id)}
+              onTouchEnd={handleTouchEnd}
+              onTouchMove={handleTouchEnd}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setActiveOptionsSubId(sub.id);
+              }}
+            >
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-sm">
                   <CreditCard className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
@@ -300,14 +326,6 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
                 <span className={`text-xs font-black ${sub.active ? 'text-zinc-800 dark:text-zinc-100' : 'text-zinc-400 line-through'}`}>
                   {formatMoney(sub.amount, sub.currency)}
                 </span>
-                <div className="flex items-center gap-1 mt-1">
-                  <button onClick={() => handleEditClick(sub)} className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-                    <Edit2 className="h-3 w-3" />
-                  </button>
-                  <button onClick={() => handleDeleteSubscription(sub.id)} className="p-1 text-rose-400 hover:text-rose-600 transition-colors">
-                    <Trash2 className="h-3 w-3" />
-                  </button>
-                </div>
               </div>
             </div>
           );
@@ -427,6 +445,56 @@ export default function FinanceSubscriptions({ subscriptions, transactions, glob
               </button>
               <button onClick={handleConfirmDelete} className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold rounded-xl transition-colors cursor-pointer">
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Long Press Bottom Sheet */}
+      {activeOptionsSubId && (
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-6" onClick={() => setActiveOptionsSubId(null)}>
+          <div 
+            className="bg-white dark:bg-[#121212] border border-zinc-200 dark:border-zinc-900 rounded-t-3xl sm:rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-slide-up sm:animate-scale-up"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-zinc-200 dark:border-zinc-900 flex justify-between items-center bg-[#fafafa]/80 dark:bg-zinc-950/20">
+              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Bill Options</h3>
+              <button onClick={() => setActiveOptionsSubId(null)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1c1c1c] cursor-pointer">
+                <X className="h-4.5 w-4.5" />
+              </button>
+            </div>
+            <div className="p-2 flex flex-col">
+              <button 
+                onClick={() => {
+                  const sub = subscriptions.find(s => s.id === activeOptionsSubId);
+                  if (sub) handleEditClick(sub);
+                  setActiveOptionsSubId(null);
+                }} 
+                className="flex items-center gap-3 p-4 hover:bg-zinc-50 dark:hover:bg-[#1a1a1a] rounded-xl transition-colors text-left"
+              >
+                <div className="p-2.5 bg-zinc-100 dark:bg-zinc-900 rounded-xl">
+                  <Edit2 className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Edit Recurring Bill</h4>
+                  <p className="text-xs text-zinc-500">Change amount, cycle, or category</p>
+                </div>
+              </button>
+              <button 
+                onClick={() => {
+                  handleDeleteSubscription(activeOptionsSubId);
+                  setActiveOptionsSubId(null);
+                }} 
+                className="flex items-center gap-3 p-4 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors text-left"
+              >
+                <div className="p-2.5 bg-rose-100 dark:bg-rose-500/20 rounded-xl">
+                  <Trash2 className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-rose-600 dark:text-rose-400">Delete Bill</h4>
+                  <p className="text-xs text-rose-500/70">Permanently stop this recurring bill</p>
+                </div>
               </button>
             </div>
           </div>

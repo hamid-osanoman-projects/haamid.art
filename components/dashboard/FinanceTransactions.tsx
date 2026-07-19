@@ -46,6 +46,20 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingTxId, setEditingTxId] = useState<string | null>(null);
   const [deleteTxId, setDeleteTxId] = useState<string | null>(null);
+  const [activeOptionsTxId, setActiveOptionsTxId] = useState<string | null>(null);
+  const longPressTimer = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleTouchStart = (id: string) => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    longPressTimer.current = setTimeout(() => {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+      setActiveOptionsTxId(id);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+  };
 
   // Auto-set currency when opening modal in a specific region
   React.useEffect(() => {
@@ -310,21 +324,31 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
           {/* Mobile Card View */}
           <div className="md:hidden flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800/80 border-t border-zinc-100 dark:border-zinc-800/80">
             {filtered.length > 0 ? filtered.map(tx => (
-              <div key={tx.id} className="p-4 flex justify-between items-start hover:bg-zinc-50 dark:hover:bg-[#1a1a1a] transition-colors gap-4">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                      {tx.category}
-                    </span>
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-zinc-400">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(tx.date).toLocaleDateString()}
+              <div 
+                key={tx.id} 
+                className="p-4 flex flex-col gap-3 hover:bg-zinc-50 dark:hover:bg-[#1a1a1a] transition-colors select-none"
+                onTouchStart={() => handleTouchStart(tx.id)}
+                onTouchEnd={handleTouchEnd}
+                onTouchMove={handleTouchEnd}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  setActiveOptionsTxId(tx.id);
+                }}
+              >
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex flex-col gap-2 min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                        {tx.category}
+                      </span>
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-zinc-400">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(tx.date).toLocaleDateString()}
+                      </div>
                     </div>
+                    <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate">{tx.note || '-'}</span>
                   </div>
-                  <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{tx.note || '-'}</span>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex flex-col items-end">
+                  <div className="flex flex-col items-end shrink-0">
                     <span className={`text-sm font-black flex items-center gap-1 ${tx.type === 'income' ? 'text-emerald-500' : 'text-zinc-800 dark:text-zinc-100'}`}>
                       {tx.type === 'income' ? '+' : '-'} {formatMoney(tx.amount, tx.currency)}
                     </span>
@@ -333,14 +357,6 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
                         ≈ {formatMoney(convert(tx.amount, tx.currency), globalCurrency)}
                       </span>
                     )}
-                  </div>
-                  <div className="flex flex-col items-center gap-1 border-l border-zinc-200 dark:border-zinc-800/50 pl-3 ml-1">
-                    <button onClick={() => handleEditClick(tx)} className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
-                      <Edit2 className="h-3.5 w-3.5" />
-                    </button>
-                    <button onClick={() => handleDeleteTransaction(tx.id)} className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -520,6 +536,56 @@ export default function FinanceTransactions({ initialTransactions, globalCurrenc
               </button>
               <button onClick={handleConfirmDelete} className="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold rounded-xl transition-colors cursor-pointer">
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Long Press Bottom Sheet */}
+      {activeOptionsTxId && (
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-6" onClick={() => setActiveOptionsTxId(null)}>
+          <div 
+            className="bg-white dark:bg-[#121212] border border-zinc-200 dark:border-zinc-900 rounded-t-3xl sm:rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-slide-up sm:animate-scale-up"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-zinc-200 dark:border-zinc-900 flex justify-between items-center bg-[#fafafa]/80 dark:bg-zinc-950/20">
+              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Transaction Options</h3>
+              <button onClick={() => setActiveOptionsTxId(null)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1c1c1c] cursor-pointer">
+                <X className="h-4.5 w-4.5" />
+              </button>
+            </div>
+            <div className="p-2 flex flex-col">
+              <button 
+                onClick={() => {
+                  const tx = transactions.find(t => t.id === activeOptionsTxId);
+                  if (tx) handleEditClick(tx);
+                  setActiveOptionsTxId(null);
+                }} 
+                className="flex items-center gap-3 p-4 hover:bg-zinc-50 dark:hover:bg-[#1a1a1a] rounded-xl transition-colors text-left"
+              >
+                <div className="p-2.5 bg-zinc-100 dark:bg-zinc-900 rounded-xl">
+                  <Edit2 className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Edit Transaction</h4>
+                  <p className="text-xs text-zinc-500">Change amount, category, or note</p>
+                </div>
+              </button>
+              <button 
+                onClick={() => {
+                  handleDeleteTransaction(activeOptionsTxId);
+                  setActiveOptionsTxId(null);
+                }} 
+                className="flex items-center gap-3 p-4 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors text-left"
+              >
+                <div className="p-2.5 bg-rose-100 dark:bg-rose-500/20 rounded-xl">
+                  <Trash2 className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-rose-600 dark:text-rose-400">Delete Transaction</h4>
+                  <p className="text-xs text-rose-500/70">Permanently remove this entry</p>
+                </div>
               </button>
             </div>
           </div>
